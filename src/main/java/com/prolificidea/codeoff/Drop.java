@@ -1,5 +1,3 @@
-package com.prolificidea.codeoff;
-
 import java.awt.*;
 import java.util.Random;
 
@@ -8,12 +6,14 @@ public class Drop {
     private Random rng = new Random();
     private int velocity, length, x, y;
     private char[][] text;
+    private int dropLevel;
 
-    Drop(int x) {
+    Drop(int x, int level) {
         this.x = x;
-        length = getRandomInteger(5, 30);
+        dropLevel = level;
+        length = getRandomInteger(5, 10);
         text = createContent(length);
-        velocity = getRandomInteger(1, 5);
+        velocity = 3;
         this.y = (-1) * length * Config.FONT_SIZE;
     }
 
@@ -25,18 +25,26 @@ public class Drop {
         return result;
     }
 
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2, int newX) {
         int fontSize = g2.getFont().getSize();
         for (int i = 0; i < length; i++) {
             if (getRandomInteger(0, length) == i)
                 text[i][0] = getRandomCharacter();
-            if (i == length - 1)
-                g2.setColor(new Color(253, 104, 25));
-            else
-                g2.setColor(new Color(66, 198, 255));
-            g2.drawChars(text[i], 0, 1, x, y + (i * fontSize));
+
+            g2.setColor(new Color(66, 198, 255));
+            if (y > 50) {
+
+                if (y > Config.SCREEN_SIZE-(2*fontSize)-dropLevel) {
+                    g2.drawChars(text[i], 0, 1, newX, y);
+                } else {
+                    g2.drawChars(text[i], 0, 1, newX, y + (i * fontSize));
+                }
+
+            }
         }
-        y += velocity;
+        if (y < Config.SCREEN_SIZE-(1.5*fontSize)-(dropLevel)) {
+            y += velocity;
+        }
     }
 
     public char getRandomCharacter() {
